@@ -1,4 +1,17 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-head -1 $1  | pnpx devmoji --commit > $1
+# update commit-msg hook
+# validation with regex
+if ! head -1 $1 | grep -E "^(feat|fix|chore|docs|test|style|refactor|perf|build|ci|revert)(\(.+?\))?: .{1,}$"; then
+echo "Aborting commit with invalid message." > &2
+exit 1
+fi
+# message length validation
+if ! head -1 $1 | grep -E "^.{1,88}$"; then
+echo "Aborting commit with too long message." > &2
+exit 1
+fi
+pnpx devmoji --e
+# Or using
+# head -1 $1 | pnpx devmoji --commit > $1
